@@ -902,11 +902,25 @@
       if (dodges >= MAX_DODGES || now - lastDodge < 300) return;
       lastDodge = now;
       dodges++;
+      // Pick a spot inside the form that doesn't touch any other chip, label, field or button
       const r = noChip.getBoundingClientRect();
       const f = form.getBoundingClientRect();
-      const minX = f.left + 8 - (r.left - tx), maxX = f.right - 8 - (r.right - tx);
-      tx = rand(Math.max(minX, -140), Math.min(maxX, 140));
-      ty = rand(-34, 34);
+      const home = { l: r.left - tx, r: r.right - tx, t: r.top - ty, b: r.bottom - ty };
+      const GAP = 8;
+      const obstacles = $$('.chip, .field__label, .rsvp input[type="text"], .rsvp textarea, .btn', form)
+        .filter((el) => el !== noChip && !noChip.contains(el))
+        .map((el) => el.getBoundingClientRect())
+        .filter((o) => o.width && o.height);
+      const clear = (x, y) => home.l + x >= f.left + GAP && home.r + x <= f.right - GAP
+        && obstacles.every((o) => home.r + x + GAP <= o.left || home.l + x - GAP >= o.right
+          || home.b + y + GAP <= o.top || home.t + y - GAP >= o.bottom);
+      let next = null;
+      for (let i = 0; i < 60 && !next; i++) {
+        const x = rand(-140, 140), y = rand(-34, 34);
+        // the first 40 tries insist on a real jump; after that any free spot will do
+        if (clear(x, y) && (i >= 40 || Math.hypot(x - tx, y - ty) > 50)) next = [x, y];
+      }
+      [tx, ty] = next || [0, 0];
       if (dodges === MAX_DODGES) { tx = 0; ty = 0; toast('Okay okay, fine. You win 😤'); }
       else if (QUIPS[dodges]) toast(QUIPS[dodges], 1800);
       noChip.style.transform = `translate(${tx.toFixed(0)}px, ${ty.toFixed(0)}px)`;
