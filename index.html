@@ -202,6 +202,21 @@
         <button class="cracker-btn" id="crackerBtn" type="button">💥<span>Burst a cracker</span></button>
         <p class="game__status" id="crackerCount" aria-live="polite">0 crackers burst</p>
       </div>
+
+      <div class="game card-panel" id="board" hidden>
+        <h3>🏆 Leaderboard</h3>
+        <p>Everyone's best scores. Can you top the table?</p>
+        <div class="tabs" role="group" aria-label="Choose a game">
+          <button type="button" class="tab on" data-game="diya" aria-pressed="true">🪔 Diya race</button>
+          <button type="button" class="tab" data-game="cracker" aria-pressed="false">💥 Crackers</button>
+        </div>
+        <ol class="board__list" id="boardList" aria-live="polite"></ol>
+        <form class="board__name" id="boardName" hidden>
+          <input id="boardNameInput" type="text" maxlength="30" placeholder="Your name for the leaderboard" autocomplete="name" required>
+          <button class="btn btn--gold btn--small" type="submit">Save</button>
+        </form>
+        <button class="btn btn--ghost btn--small" id="boardRefresh" type="button">↻ Refresh</button>
+      </div>
     </section>
 
     <!-- LOCATION -->

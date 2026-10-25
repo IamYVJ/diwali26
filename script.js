@@ -17,6 +17,9 @@
     mapsQuery: '',
     whatsappNumber: '',
     guestName: '',
+    // Google Apps Script web app URL for the leaderboard (ends in /exec).
+    // Leave empty to hide the leaderboard. See leaderboard/Code.gs.
+    leaderboardUrl: 'https://script.google.com/macros/s/AKfycbygj2Mky_hbH6syBjgj1CbzVcPewEq8E6Lx2eXwZNvvbjZwc4-1MNLVk8nOmZcyByu50A/exec',
   };
 
   /* ---------- Private details from the invite link ---------- */
@@ -587,6 +590,101 @@
     });
   });
 
+  /* ---------- Leaderboard (Google Sheets via Apps Script) ---------- */
+  const Board = (() => {
+    const url = CONFIG.leaderboardUrl;
+    if (!url) return { submit() {} };
+    const root = $('#board');
+    root.hidden = false;
+    const list = $('#boardList');
+    const nameForm = $('#boardName');
+    const NAME_KEY = 'diwali-name';
+    const getName = () => (CONFIG.guestName || store.get(NAME_KEY) || '').trim();
+    const fmt = { diya: (s) => `${s}s`, cracker: (s) => `${s} 💥` };
+    let game = 'diya';
+    let data = {};
+    const queue = {};
+    let timer;
+
+    function render(msg) {
+      list.innerHTML = '';
+      const rows = data[game] || [];
+      if (msg || !rows.length) {
+        const li = document.createElement('li');
+        li.className = 'board__empty';
+        li.textContent = msg || 'No scores yet. Be the first! 🚀';
+        list.appendChild(li);
+        return;
+      }
+      const me = getName().toLowerCase();
+      rows.forEach((r, i) => {
+        const li = document.createElement('li');
+        if (me && r.name.toLowerCase() === me) li.className = 'me';
+        const rank = document.createElement('span');
+        rank.className = 'board__rank';
+        rank.textContent = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+        const who = document.createElement('span');
+        who.className = 'board__who';
+        who.textContent = r.name;
+        const score = document.createElement('span');
+        score.className = 'board__score';
+        score.textContent = fmt[game](r.score);
+        li.append(rank, who, score);
+        list.appendChild(li);
+      });
+    }
+
+    async function call(params) {
+      try {
+        const res = await fetch(`${url}?${new URLSearchParams(params)}`);
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error);
+        data = j.top;
+        render();
+      } catch {
+        render('Leaderboard is napping 😴 Try refresh.');
+      }
+    }
+
+    function flush() {
+      const name = getName();
+      const games = Object.keys(queue);
+      if (!games.length) return;
+      if (!name) { nameForm.hidden = false; toast('Add your name to join the leaderboard 🏆'); return; }
+      games.forEach((g) => { call({ action: 'add', name, game: g, score: queue[g] }); delete queue[g]; });
+    }
+
+    $$('.tab', root).forEach((t) => t.addEventListener('click', () => {
+      game = t.dataset.game;
+      $$('.tab', root).forEach((o) => {
+        o.classList.toggle('on', o === t);
+        o.setAttribute('aria-pressed', String(o === t));
+      });
+      render();
+    }));
+    $('#boardRefresh').addEventListener('click', () => call({ action: 'top' }));
+    nameForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const n = $('#boardNameInput').value.trim();
+      if (!n) return;
+      store.set(NAME_KEY, n);
+      nameForm.hidden = true;
+      flush();
+    });
+
+    render('Loading scores…');
+    call({ action: 'top' });
+
+    return {
+      // Scores are sent after a short pause so rapid cracker taps become one request
+      submit(g, score) {
+        queue[g] = score;
+        clearTimeout(timer);
+        timer = setTimeout(flush, 1500);
+      },
+    };
+  })();
+
   /* ---------- Game 1: light up the house ---------- */
   (function diyaGame() {
     const N = 7;
@@ -638,6 +736,7 @@
         status.innerHTML = `✨ House lit in <strong>${secs}s</strong>! ${verdict}${isBest && best ? ' · New best!' : ''}`;
         FX.finale(6);
         reset.hidden = false;
+        Board.submit('diya', +secs);
       }
     }
 
@@ -741,6 +840,7 @@
       FX.launch(x + rand(-60, 60));
       if (n % 5 === 0) FX.finale(3);
       if (MILESTONES[n]) toast(MILESTONES[n], 3200);
+      Board.submit('cracker', n);
     });
   })();
 

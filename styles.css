@@ -626,6 +626,45 @@ a { color: var(--gold); }
   80% { transform: rotate(3deg); }
 }
 
+/* ---------- Leaderboard ---------- */
+.tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.tab {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(255, 255, 255, .2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .04);
+  font-size: .9rem;
+  cursor: pointer;
+}
+.tab.on { background: linear-gradient(135deg, #ffdb72, var(--gold-deep)); border-color: transparent; color: var(--ink); font-weight: 600; }
+.board__list { margin: 12px auto 0; padding: 0; max-width: 360px; list-style: none; text-align: left; }
+.board__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+.board__list li:nth-child(odd) { background: rgba(255, 255, 255, .05); }
+.board__list li.me { outline: 1.5px solid var(--gold); }
+.board__rank { min-width: 1.8em; font-weight: 700; color: var(--gold); }
+.board__who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board__score { font-weight: 700; font-variant-numeric: tabular-nums; }
+.board__empty { justify-content: center; color: var(--muted); }
+.board__name { display: flex; gap: 8px; max-width: 360px; margin: 14px auto 0; }
+.board__name input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(255, 255, 255, .16);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, .25);
+  color: var(--text);
+  font: 16px var(--font);
+}
+.board__name .btn { margin-top: 0; }
+
 /* ---------- Venue ---------- */
 .venue { text-align: center; }
 .venue__pin { font-size: 3rem; line-height: 1; animation: drop 1.8s ease-in-out infinite; }
