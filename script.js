@@ -600,7 +600,7 @@
     const nameForm = $('#boardName');
     const NAME_KEY = 'diwali-name';
     const getName = () => (CONFIG.guestName || store.get(NAME_KEY) || '').trim();
-    const fmt = { diya: (s) => `${s}s`, cracker: (s) => `${s} 💥` };
+    const fmt = { diya: (s) => `${Number(s).toFixed(1)}s`, cracker: (s) => `${s} 💥` };
     let game = 'diya';
     let data = {};
     // Scores waiting to be sent (game -> score). Kept in localStorage until the
