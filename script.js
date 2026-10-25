@@ -25,7 +25,11 @@
     const decode = (s) => {
       try {
         const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
-        return JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))));
+        const text = new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+        if (text.startsWith('{')) return JSON.parse(text); // older long-form links
+        // compact form: address|maps|whatsapp|name  (maps "~code" = maps.app.goo.gl/code)
+        const [a, q, w, n] = text.split('|');
+        return { a, q: q && q.startsWith('~') ? 'https://maps.app.goo.gl/' + q.slice(1) : q, w, n };
       } catch { return null; }
     };
     const fromLink = new URLSearchParams(location.hash.slice(1)).get('i');
@@ -42,7 +46,12 @@
     if (!data) return;
     CONFIG.address = String(data.a || '');
     CONFIG.mapsQuery = String(data.q || data.a || '');
-    CONFIG.whatsappNumber = String(data.w || '');
+    // Indian mobile numbers are stored as a short base-36 value (7 chars) without +91.
+    // Anything longer is an older link with the plain digits.
+    const raw = String(data.w || '');
+    CONFIG.whatsappNumber = raw && raw.length <= 8
+      ? '91' + String(parseInt(raw, 36)).padStart(10, '0')
+      : raw.replace(/\D/g, '');
     CONFIG.guestName = String(data.n || '');
   })();
 
@@ -389,7 +398,10 @@
   if (CONFIG.address) {
     $('#venueAddr').textContent = CONFIG.address;
     $('#venueActions').hidden = false;
-    $('#mapsLink').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.mapsQuery)}`;
+    // mapsQuery can be a pasted https link (e.g. a Google Maps share link) or plain search text
+    $('#mapsLink').href = /^https:\/\//i.test(CONFIG.mapsQuery)
+      ? CONFIG.mapsQuery
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.mapsQuery)}`;
   }
 
   const utcStamp = (ts) => new Date(ts).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
