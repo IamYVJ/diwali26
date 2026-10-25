@@ -825,6 +825,24 @@ a { color: var(--gold); }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+.update-bar {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 12px;
+  right: 68px;
+  z-index: 105;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffdb72, var(--gold-deep));
+  color: var(--ink);
+  font-weight: 600;
+  font-size: .85rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .45);
+  cursor: pointer;
+}
+
 /* ---------- Larger screens ---------- */
 @media (min-width: 720px) {
   .flip-grid { grid-template-columns: repeat(4, 1fr); }

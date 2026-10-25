@@ -603,8 +603,15 @@
     const fmt = { diya: (s) => `${s}s`, cracker: (s) => `${s} 💥` };
     let game = 'diya';
     let data = {};
-    const queue = {};
-    let timer;
+    // Scores waiting to be sent (game -> score). Kept in localStorage until the
+    // sheet confirms them, so a closed tab or a failed request isn't a lost score.
+    const PENDING_KEY = 'diwali-pending';
+    let queue = {};
+    try { queue = JSON.parse(store.get(PENDING_KEY)) || {}; } catch { queue = {}; }
+    const saveQueue = () => store.set(PENDING_KEY, JSON.stringify(queue));
+    const BETTER = { diya: (a, b) => a < b, cracker: (a, b) => a > b };
+    const sending = {};
+    let timer, retryTimer, retries = 0;
 
     function render(msg) {
       list.innerHTML = '';
@@ -634,24 +641,47 @@
       });
     }
 
-    async function call(params) {
+    // Resolves true when the sheet answered. keepalive lets the request finish if the tab closes.
+    async function call(params, keepalive = false) {
       try {
-        const res = await fetch(`${url}?${new URLSearchParams(params)}`);
+        const res = await fetch(`${url}?${new URLSearchParams(params)}`, { keepalive });
         const j = await res.json();
         if (!j.ok) throw new Error(j.error);
         data = j.top;
         render();
+        return true;
       } catch {
-        render('Leaderboard is napping 😴 Try refresh.');
+        if (!Object.keys(data).length) render('Leaderboard is napping 😴 Try refresh.');
+        return false;
       }
     }
 
-    function flush() {
-      const name = getName();
-      const games = Object.keys(queue);
+    function scheduleRetry() {
+      if (retries >= 5) return;
+      clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => { retries++; flush(); }, 4000 * (retries + 1));
+    }
+
+    function flush(keepalive = false) {
+      clearTimeout(timer);
+      const games = Object.keys(queue).filter((g) => sending[g] !== queue[g]);
       if (!games.length) return;
-      if (!name) { nameForm.hidden = false; toast('Add your name to join the leaderboard 🏆'); return; }
-      games.forEach((g) => { call({ action: 'add', name, game: g, score: queue[g] }); delete queue[g]; });
+      const name = getName();
+      if (!name) {
+        nameForm.hidden = false;
+        if (!document.hidden) toast('Add your name to join the leaderboard 🏆');
+        return;
+      }
+      games.forEach(async (g) => {
+        const score = queue[g];
+        sending[g] = score;
+        const ok = await call({ action: 'add', name, game: g, score }, keepalive);
+        delete sending[g];
+        if (!ok) { scheduleRetry(); return; }
+        retries = 0;
+        if (queue[g] === score) { delete queue[g]; saveQueue(); }
+        if (g in queue) flush(); // a better score arrived while this one was in flight
+      });
     }
 
     $$('.tab', root).forEach((t) => t.addEventListener('click', () => {
@@ -662,7 +692,9 @@
       });
       render();
     }));
-    $('#boardRefresh').addEventListener('click', () => call({ action: 'top' }));
+    $('#boardRefresh').addEventListener('click', async () => {
+      if (!(await call({ action: 'top' }))) toast('Leaderboard is napping 😴 Try again in a bit.');
+    });
     nameForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const n = $('#boardNameInput').value.trim();
@@ -672,15 +704,23 @@
       flush();
     });
 
+    // Send whatever the tab still holds when it is hidden or closed
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(true); });
+    window.addEventListener('pagehide', () => flush(true));
+
     render('Loading scores…');
     call({ action: 'top' });
+    if (getName()) flush(); // scores left over from an earlier visit
 
     return {
-      // Scores are sent after a short pause so rapid cracker taps become one request
-      submit(g, score) {
-        queue[g] = score;
+      // `now` sends straight away (a finished diya race); otherwise a short pause
+      // lets rapid cracker taps become one request. Only the better score is kept.
+      submit(g, score, now = false) {
+        if (!(g in queue) || BETTER[g](score, queue[g])) queue[g] = score;
+        saveQueue();
         clearTimeout(timer);
-        timer = setTimeout(flush, 1500);
+        if (now) flush();
+        else timer = setTimeout(flush, 1500);
       },
     };
   })();
@@ -736,7 +776,7 @@
         status.innerHTML = `✨ House lit in <strong>${secs}s</strong>! ${verdict}${isBest && best ? ' · New best!' : ''}`;
         FX.finale(6);
         reset.hidden = false;
-        Board.submit('diya', +secs);
+        Board.submit('diya', +secs, true);
       }
     }
 
@@ -1027,4 +1067,42 @@
   } else {
     showVisitorCount();
   }
+
+  /* ---------- New version check ---------- */
+  // GitHub Pages lets browsers reuse files for ~10 minutes, and every deploy stamps all
+  // files with one Last-Modified time. If the server's page is newer than the one we
+  // loaded, re-download page + assets and reload (or ask first once the guest is playing).
+  (function updateCheck() {
+    const bar = $('#updateBar');
+    const loaded = new Date(document.lastModified).getTime();
+    if (!bar || !loaded || location.protocol === 'file:') return;
+    const GUARD = 'diwali-refreshed';
+    let busy = false, lastCheck = 0;
+
+    async function refresh() {
+      const files = [location.pathname, 'script.js', 'styles.css'];
+      try { await Promise.all(files.map((f) => fetch(f, { cache: 'reload' }))); } catch { /* reload anyway */ }
+      location.reload();
+    }
+    bar.addEventListener('click', refresh);
+
+    async function check() {
+      if (busy || Date.now() - lastCheck < 60000) return;
+      busy = true;
+      lastCheck = Date.now();
+      try {
+        const res = await fetch(location.pathname, { cache: 'no-store' });
+        const server = Date.parse(res.headers.get('last-modified'));
+        if (!res.ok || !(server > loaded + 1000)) return;
+        // Already refreshed for this version and still stale? Stop, never loop.
+        if (store.get(GUARD) === String(server)) return;
+        store.set(GUARD, String(server));
+        if (introDone) bar.hidden = false;
+        else refresh();
+      } catch { /* offline or blocked: skip */ } finally { busy = false; }
+    }
+
+    setTimeout(check, 1500);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+  })();
 })();
