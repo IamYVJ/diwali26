@@ -792,6 +792,30 @@
         FX.explode(x, y - 10, { count: 80, quiet: true });
       }
     });
+    // "Can't make it" dodges the cursor/finger a few times before letting itself be picked
+    const noChip = $('.chip--no', form);
+    const MAX_DODGES = 6;
+    const QUIPS = { 1: 'Whoa, slippery! 😏', 3: 'Are you sure? 🥺', 5: 'Last chance to change your mind 😢' };
+    let dodges = 0, tx = 0, ty = 0, lastDodge = 0;
+    function dodge() {
+      const now = performance.now();
+      if (dodges >= MAX_DODGES || now - lastDodge < 300) return;
+      lastDodge = now;
+      dodges++;
+      const r = noChip.getBoundingClientRect();
+      const f = form.getBoundingClientRect();
+      const minX = f.left + 8 - (r.left - tx), maxX = f.right - 8 - (r.right - tx);
+      tx = rand(Math.max(minX, -140), Math.min(maxX, 140));
+      ty = rand(-34, 34);
+      if (dodges === MAX_DODGES) { tx = 0; ty = 0; toast('Okay okay, fine. You win 😤'); }
+      else if (QUIPS[dodges]) toast(QUIPS[dodges], 1800);
+      noChip.style.transform = `translate(${tx.toFixed(0)}px, ${ty.toFixed(0)}px)`;
+    }
+    noChip.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') dodge(); });
+    noChip.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') dodge(); });
+    // e.detail is 0 for keyboard-triggered clicks, so keyboard users are never blocked
+    noChip.addEventListener('click', (e) => { if (e.detail > 0 && dodges < MAX_DODGES) { e.preventDefault(); dodge(); } }, true);
+
     nameEl.addEventListener('input', () => { nameEl.classList.remove('invalid'); err.textContent = ''; });
 
     form.addEventListener('submit', (e) => {
