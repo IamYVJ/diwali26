@@ -15,7 +15,7 @@ const TOP_N = 10;
 // better: 'low' = smaller is better (time), 'high' = bigger is better (count).
 // min/max reject impossible scores (e.g. a 0.1s diya race).
 const GAMES = {
-  diya:    { better: 'low',  min: 1,  max: 3600,    decimals: 1 },
+  diya:    { better: 'low',  min: 0.5, max: 3600,   decimals: 1 },
   cracker: { better: 'high', min: 1,  max: 1000000, decimals: 0 },
 };
 
