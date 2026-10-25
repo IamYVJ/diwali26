@@ -593,7 +593,7 @@
   /* ---------- Leaderboard (Google Sheets via Apps Script) ---------- */
   const Board = (() => {
     const url = CONFIG.leaderboardUrl;
-    if (!url) return { submit() {} };
+    if (!url) return { submit() {}, nameKnown() {} };
     const root = $('#board');
     root.hidden = false;
     const list = $('#boardList');
@@ -721,6 +721,13 @@
         clearTimeout(timer);
         if (now) flush();
         else timer = setTimeout(flush, 1500);
+      },
+      // Called after the RSVP stores the guest's name: scores that were waiting for
+      // a name are sent under it, and the "your name" box is no longer needed
+      nameKnown() {
+        nameForm.hidden = true;
+        flush();
+        render();
       },
     };
   })();
@@ -1006,6 +1013,7 @@
       const url = `https://wa.me/${number}?text=${encodeURIComponent(lines.join('\n'))}`;
 
       store.set('diwali-name', name);
+      Board.nameKnown();
       const [emoji, title] = THANKS[status];
       $('#thanksEmoji').textContent = emoji;
       $('#thanksTitle').textContent = title;
