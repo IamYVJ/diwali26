@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Diwali Night · You're Invited 🪔</title>
+  <meta name="description" content="YVJ, Loharuka & Dev invite you to a Diwali night of cards, food, drinks, crackers, games, singing and dancing.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#14061f">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="You're invited to Diwali Night 🪔">
+  <meta property="og:description" content="Cards, food, drinks, crackers, games, singing & dancing. Hosted by YVJ, Loharuka & Dev. Tap to open your invite!">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <!-- Shared gradients for every diya on the page -->
+  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="gGlow">
+        <stop offset="0" stop-color="#ffcc55" stop-opacity=".8"/>
+        <stop offset=".45" stop-color="#ff8a1f" stop-opacity=".28"/>
+        <stop offset="1" stop-color="#ff8a1f" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#ffe27a"/>
+        <stop offset=".55" stop-color="#ffa210"/>
+        <stop offset="1" stop-color="#ff4a00"/>
+      </linearGradient>
+      <linearGradient id="gClay" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#d9662c"/>
+        <stop offset="1" stop-color="#7a2a0c"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="sky" aria-hidden="true">
+    <div class="stars" id="stars"></div>
+    <div class="lanterns" id="lanterns"></div>
+  </div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <button id="intro" class="intro" type="button" aria-label="Light the diya to open your invite">
+    <span class="intro__kicker">You've got an invite</span>
+    <span class="diya diya--xl" data-diya></span>
+    <span class="intro__hint">Tap the diya to light it ✨</span>
+  </button>
+
+  <button id="soundToggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
+
+  <div class="toran" aria-hidden="true"></div>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero__diyas" aria-hidden="true">
+        <span class="diya lit" data-diya></span>
+        <span class="diya lit diya--md" data-diya></span>
+        <span class="diya lit" data-diya></span>
+      </div>
+      <p class="hero__from">YVJ <span>·</span> Loharuka <span>·</span> Dev</p>
+      <p class="hero__kicker">invite you to a</p>
+      <h1 class="hero__title">Diwali <span>Night</span></h1>
+      <p class="hero__tag">Lights · Food · Music · Chaos</p>
+
+      <div class="when">
+        <span class="pill">📅 <span data-date>Saturday, 31 October</span></span>
+        <span class="pill">⏰ <span data-time>7:00 PM onwards</span></span>
+      </div>
+
+      <div class="countdown" id="countdown" role="timer" aria-label="Countdown to the party">
+        <div class="cd"><span class="cd__num" data-cd="d">00</span><span class="cd__lbl">days</span></div>
+        <div class="cd"><span class="cd__num" data-cd="h">00</span><span class="cd__lbl">hrs</span></div>
+        <div class="cd"><span class="cd__num" data-cd="m">00</span><span class="cd__lbl">min</span></div>
+        <div class="cd"><span class="cd__num" data-cd="s">00</span><span class="cd__lbl">sec</span></div>
+      </div>
+
+      <div class="hero__ctas">
+        <a href="#rsvp" class="btn btn--gold">💌 RSVP now</a>
+        <div class="cal">
+          <button class="btn btn--ghost" id="calBtn" type="button" aria-expanded="false" aria-controls="calMenu">📆 Add to calendar</button>
+          <div class="cal__menu" id="calMenu" hidden>
+            <a data-gcal target="_blank" rel="noopener">Google Calendar</a>
+            <button type="button" data-ics>Apple / Outlook (.ics)</button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Psst… tap anywhere for fireworks 🎆</p>
+    </section>
+
+    <!-- HOSTS -->
+    <section class="section hosts">
+      <h2 class="section__title">Hosted by a <em>Trail of Aces</em></h2>
+      <p class="section__sub">The highest hand in Teen Patti. Obviously. (Tap a card.)</p>
+      <div class="hand">
+        <button class="pcard" type="button" style="--r:-14deg;--y:12px" data-suit-hue="200">
+          <span class="pcard__corner">A<br>♠</span>
+          <span class="pcard__suit">♠</span>
+          <span class="pcard__name">YVJ</span>
+          <span class="pcard__corner pcard__corner--br">A<br>♠</span>
+        </button>
+        <button class="pcard pcard--red" type="button" style="--r:0deg;--y:-6px" data-suit-hue="345">
+          <span class="pcard__corner">A<br>♥</span>
+          <span class="pcard__suit">♥</span>
+          <span class="pcard__name">Loharuka</span>
+          <span class="pcard__corner pcard__corner--br">A<br>♥</span>
+        </button>
+        <button class="pcard pcard--red" type="button" style="--r:14deg;--y:12px" data-suit-hue="20">
+          <span class="pcard__corner">A<br>♦</span>
+          <span class="pcard__suit">♦</span>
+          <span class="pcard__name">Dev</span>
+          <span class="pcard__corner pcard__corner--br">A<br>♦</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- WHAT'S ON -->
+    <section class="section" id="whats-on">
+      <h2 class="section__title">What's on the <em>menu</em></h2>
+      <p class="section__sub">Tap a card to flip it</p>
+      <div class="flip-grid" id="flipGrid">
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#e0122f;--c2:#7d0b33">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🃏</span><span class="flip__label">Cards</span></span>
+            <span class="flip__face flip__back"><strong>Poker tables</strong> open all night. Bring your poker face (and loose change).</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#ff8a1f;--c2:#b8360a">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🍛</span><span class="flip__label">Food</span></span>
+            <span class="flip__face flip__back"><strong>Chaat, snacks &amp; mithai</strong> on loop. Come hungry, leave in a food coma.</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#19b6a3;--c2:#0b5a78">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🍹</span><span class="flip__label">Drinks</span></span>
+            <span class="flip__face flip__back"><strong>Cocktails &amp; mocktails</strong>, expertly made by a professional. Cheers to light &amp; laughter!</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#ff4f8b;--c2:#8d1170">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🎆</span><span class="flip__label">Fire crackers</span></span>
+            <span class="flip__face flip__back"><strong>Phuljhadis, anaars &amp; chakris.</strong> Safety first, dhamaka second.</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#7b5cff;--c2:#33178f">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🎲</span><span class="flip__label">Games</span></span>
+            <span class="flip__face flip__back"><strong>Tambola, dumb charades</strong> &amp; a few surprises. Winners get bragging rights.</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#f0a012;--c2:#b04a0e">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🎤</span><span class="flip__label">Singing</span></span>
+            <span class="flip__face flip__back"><strong>Listen to your hits</strong> in a beautiful voice. Bollywood requests welcome.</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#19a8ff;--c2:#4a1fa8">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">🎙️</span><span class="flip__label">Karaoke</span></span>
+            <span class="flip__face flip__back"><strong>Grab the mic</strong> and sing your heart out. No talent required!</span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" style="--c1:#ff4f8b;--c2:#e0661a">
+          <span class="flip__inner">
+            <span class="flip__face flip__front"><span class="flip__emoji">💃</span><span class="flip__label">Dancing</span></span>
+            <span class="flip__face flip__back"><strong>The dance floor is always open.</strong> Two left feet are welcome!</span>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PLAY ZONE -->
+    <section class="section" id="play">
+      <h2 class="section__title">Pre-party <em>warm-up</em></h2>
+      <p class="section__sub">Practice now. Compete on the night.</p>
+
+      <div class="game card-panel">
+        <h3>🪔 Light up the house</h3>
+        <p>Light all 7 diyas as fast as you can.</p>
+        <div class="diya-row" id="diyaRow"></div>
+        <p class="game__status" id="diyaStatus" aria-live="polite">0 / 7 lit</p>
+        <button class="btn btn--ghost btn--small" id="diyaReset" type="button" hidden>Play again</button>
+      </div>
+
+      <div class="game card-panel">
+        <h3>🃏 Pick your Diwali fortune</h3>
+        <p>Three cards. One destiny. Choose wisely.</p>
+        <div class="fortune" id="fortune"></div>
+        <div class="fortune__result" id="fortuneResult" aria-live="polite" hidden></div>
+        <button class="btn btn--ghost btn--small" id="reshuffle" type="button" hidden>🔀 Shuffle again</button>
+      </div>
+
+      <div class="game card-panel">
+        <h3>💥 Cracker stress-test</h3>
+        <p>Go on. Nobody's judging. (We are.)</p>
+        <button class="cracker-btn" id="crackerBtn" type="button">💥<span>Burst a cracker</span></button>
+        <p class="game__status" id="crackerCount" aria-live="polite">0 crackers burst</p>
+      </div>
+    </section>
+
+    <!-- LOCATION -->
+    <section class="section" id="where">
+      <h2 class="section__title">Where's the <em>party</em>?</h2>
+      <p class="section__sub">Follow the lights. You literally can't miss it.</p>
+      <div class="card-panel venue">
+        <div class="venue__pin" aria-hidden="true">📍</div>
+        <p class="venue__addr" id="venueAddr">🔒 The address is in your personal invite link.<br>Open the link you were sent to see it.</p>
+        <div class="venue__actions" id="venueActions" hidden>
+          <a id="mapsLink" class="btn btn--gold" target="_blank" rel="noopener">🗺️ Open in Maps</a>
+          <button id="copyAddr" class="btn btn--ghost" type="button">📋 Copy address</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="section" id="rsvp">
+      <h2 class="section__title">Are you <em>in</em>?</h2>
+      <p class="section__sub">RSVP below. It opens WhatsApp with your reply ready to send.</p>
+
+      <form id="rsvpForm" class="card-panel rsvp" novalidate>
+        <label class="field">
+          <span class="field__label">Your name</span>
+          <input id="rName" type="text" autocomplete="name" maxlength="60" placeholder="e.g. Uday Shetty" required>
+        </label>
+
+        <fieldset class="field">
+          <legend class="field__label">Coming?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="status" value="yes"><span>🎉 Count me in</span></label>
+            <label class="chip"><input type="radio" name="status" value="maybe"><span>🤔 Maybe</span></label>
+            <label class="chip"><input type="radio" name="status" value="no"><span>😢 Can't make it</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field" id="bringField">
+          <legend class="field__label">I'm bringing…</legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="bring" value="Dance moves"><span>💃 Dance moves</span></label>
+            <label class="chip"><input type="checkbox" name="bring" value="My singing voice"><span>🎤 My singing voice</span></label>
+            <label class="chip"><input type="checkbox" name="bring" value="A poker face"><span>🃏 A poker face</span></label>
+            <label class="chip"><input type="checkbox" name="bring" value="A big appetite"><span>🍽️ A big appetite</span></label>
+            <label class="chip"><input type="checkbox" name="bring" value="Good vibes only"><span>✨ Good vibes only</span></label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span class="field__label">Song request for the playlist 🎶</span>
+          <input id="rSong" type="text" maxlength="80" placeholder="Something we can dance to">
+        </label>
+
+        <label class="field">
+          <span class="field__label">A note for the hosts</span>
+          <textarea id="rNote" rows="3" maxlength="300" placeholder="Wishes, dietary needs, creative excuses…"></textarea>
+        </label>
+
+        <p class="form-error" id="formError" role="alert"></p>
+        <button type="submit" class="btn btn--gold btn--block">Send RSVP on WhatsApp 💬</button>
+        <p class="fineprint">Opens WhatsApp with your message pre-filled. Just hit send!</p>
+      </form>
+
+      <div class="card-panel thanks" id="thanks" hidden>
+        <div class="thanks__emoji" id="thanksEmoji">🎉</div>
+        <h3 class="thanks__title" id="thanksTitle">Yay! See you there.</h3>
+        <p class="thanks__text">Almost done! Hit <strong>send</strong> in WhatsApp so the hosts get it.</p>
+        <div class="thanks__actions">
+          <a class="btn btn--gold" id="waLink" target="_blank" rel="noopener">💬 Open WhatsApp</a>
+          <a class="btn btn--ghost" data-gcal target="_blank" rel="noopener" id="thanksCal">📆 Google Calendar</a>
+          <button class="btn btn--ghost" data-ics type="button" id="thanksIcs">📆 Apple / Outlook</button>
+        </div>
+        <button class="linkish" id="editRsvp" type="button">Change my RSVP</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="footer__big">Shubh Deepavali! 🪔</p>
+    <p>With love, <strong>YVJ, Loharuka &amp; Dev</strong></p>
+    <p class="footer__small">Real crackers at the party, virtual ones here.</p>
+  </footer>
+
+  <a href="#rsvp" class="fab hide" id="fab">💌 RSVP</a>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
