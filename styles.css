@@ -775,6 +775,10 @@ a { color: var(--gold); }
 .footer strong { color: var(--text); }
 .footer__big { font-family: var(--font-display); font-size: 2rem; color: var(--gold); }
 .footer__small { font-size: .8rem; }
+/* No `display` here: it would override [hidden] and show a bare "— visitors"
+   to anyone whose adblocker blocks GoatCounter. */
+.footer .visitor-counter { margin: 14px 0 0; font-size: .75rem; letter-spacing: .04em; opacity: .8; }
+.visitor-count { font-variant-numeric: tabular-nums; color: var(--text); }
 
 .fab {
   position: fixed;
