@@ -564,7 +564,7 @@
     fabIO.observe($('#rsvp'));
   }
 
-  /* ---------- Hosts: Trail of Aces ---------- */
+  /* ---------- Hosts: Three Aces ---------- */
   $$('.pcard').forEach((card) => {
     card.addEventListener('click', () => {
       card.classList.toggle('up');
@@ -747,7 +747,7 @@
   /* ---------- Game 2: fortune cards ---------- */
   (function fortuneGame() {
     const FORTUNES = [
-      ['🃏', 'Teen Patti Tycoon', 'The cards love you tonight. Your friends? Less so.'],
+      ['🃏', 'Poker Tycoon', 'The cards love you tonight. Your friends? Less so.'],
       ['🎤', 'Antakshari Captain', 'You know every song since 1995. Lead the team to glory.'],
       ['💃', 'First on the Dance Floor', 'When the dhol drops, you drop everything.'],
       ['🍬', 'Chief Mithai Inspector', 'Quality control on every kaju katli. Strictly professional.'],
@@ -758,7 +758,7 @@
       ['🍹', 'Mocktail Mixologist', 'Your "secret recipe" is just Rooh Afza. We respect it.'],
       ['🪔', 'Keeper of the Diyas', 'No diya goes out on your watch.'],
       ['🎶', 'DJ for 10 Minutes', 'You get the aux. Use your power wisely.'],
-      ['😎', 'Poker Face Pro', 'Nobody can tell if you have a trail or a pair of twos.'],
+      ['😎', 'Poker Face Pro', 'Nobody can tell if you have a full house or a pair of twos.'],
     ];
     const SUITS = ['♠', '♥', '♦', '♣'];
     const RANKS = ['A', 'K', 'Q', 'J', '10', '9', '7'];
